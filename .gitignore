@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment configurations and secrets
+.env
+.env.local
+server/.env
+server/.env.local
+
+# Build folders
+dist/
+client/dist/
+build/
+
+# Debug and system generated files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.system_generated/
+*.log
+.gemini/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
