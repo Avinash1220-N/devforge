@@ -11,9 +11,19 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Enable CORS with Credentials for HTTP-Only Cookie JWT sharing
+// Enable CORS with Credentials for HTTP-Only Cookie JWT sharing and support null origin previews
+const allowedOrigins = [
+  process.env.CLIENT_URL || 'http://localhost:5173',
+  'null'
+];
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS blocked origin'), false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -66,4 +76,4 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`DevForge AI Server is running on port ${PORT}`);
 });
-// Nodemon configuration reload trigger
+// Nodemon configuration reload trigger - API Key configured
