@@ -42,12 +42,18 @@ async function runVerification() {
 
   // Calculate DAU
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const dauUsers = await UserActivity.distinct('userId', { createdAt: { $gte: startOfToday } });
+  const dauUsers = await UserActivity.distinct('userId', { 
+    userId: { $in: [userA._id, userB._id, userC._id] },
+    createdAt: { $gte: startOfToday } 
+  });
   console.log(`- Unique active users today (DAU): ${dauUsers.length} (Expected: 2 - User A, User B)`);
 
   // Calculate MAU
   const startOf30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const mauUsers = await UserActivity.distinct('userId', { createdAt: { $gte: startOf30Days } });
+  const mauUsers = await UserActivity.distinct('userId', { 
+    userId: { $in: [userA._id, userB._id, userC._id] },
+    createdAt: { $gte: startOf30Days } 
+  });
   console.log(`- Unique active users in last 30 days (MAU): ${mauUsers.length} (Expected: 3 - User A, User B, User C)`);
 
   if (dauUsers.length === 2 && mauUsers.length === 3) {

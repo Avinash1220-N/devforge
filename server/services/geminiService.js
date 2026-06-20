@@ -31,7 +31,7 @@ if (!isMockMode) {
  * @returns {Promise<any>} - The response string or parsed JSON object
  */
 async function executeGeminiCall({ userId, feature, promptText, version, rawInput, isJson = true }) {
-  const modelName = 'gemini-1.5-flash';
+  const modelName = 'gemini-2.5-flash';
   const startTime = Date.now();
 
   // 1. Generate SHA-256 cache key hash

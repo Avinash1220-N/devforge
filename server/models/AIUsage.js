@@ -22,7 +22,7 @@ const AIUsageSchema = new mongoose.Schema({
   },
   model: {
     type: String,
-    default: 'gemini-1.5-flash'
+    default: 'gemini-2.5-flash'
   },
   cacheHit: {
     type: Boolean,

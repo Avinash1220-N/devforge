@@ -6,9 +6,11 @@ import {
   Bold, Italic, Heading, Link, List, FileCode, CheckSquare,
   Smartphone, Monitor, ChevronRight
 } from 'lucide-react';
-import { authAPI, githubAPI, portfolioAPI, deployAPI, aiAPI } from './utils/api';
+import { authAPI, githubAPI, portfolioAPI, deployAPI, aiAPI, API_BASE } from './utils/api';
 import { buildPortfolioHtml } from './utils/templateBuilder';
 import AdminDashboard from './components/admin/AdminDashboard';
+
+const SERVER_URL = API_BASE.replace(/\/api$/, '') || 'http://localhost:5000';
 
 // Custom inline SVG components to prevent bundler export discrepancies
 const Github = ({ className = "w-5 h-5" }) => (
@@ -272,7 +274,7 @@ export default function App() {
     setDeploying(true);
     setDeployError('');
     try {
-      const htmlContent = buildPortfolioHtml(markdown, theme, portfolio?._id, 'http://localhost:5000');
+      const htmlContent = buildPortfolioHtml(markdown, theme, portfolio?._id, SERVER_URL);
       const res = await deployAPI.deployGitHubPages(portfolio._id, repoName, htmlContent, theme);
       setDeployUrl(res.data.url);
       alert('Portfolio successfully deployed to GitHub Pages!');
@@ -285,7 +287,7 @@ export default function App() {
 
   // Real-time compilation preview
   const getPreviewSource = () => {
-    return buildPortfolioHtml(markdown, theme, portfolio?._id || 'mock_id', 'http://localhost:5000');
+    return buildPortfolioHtml(markdown, theme, portfolio?._id || 'mock_id', SERVER_URL);
   };
 
   // --- PHASE 2 AI ROUTINE HANDLERS ---
@@ -449,7 +451,7 @@ export default function App() {
 
   // Auth logins
   const handleGitHubLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/github/callback';
+    window.location.href = 'http://localhost:5000/api/auth/github';
   };
 
   const handleMockLogin = async (e) => {

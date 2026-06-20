@@ -26,6 +26,17 @@ const generateTokenAndSetCookie = (res, userId) => {
 };
 
 /**
+ * @route   GET /api/auth/github
+ * @desc    Redirect to GitHub OAuth Consent Screen
+ */
+router.get('/github', (req, res) => {
+  const clientId = process.env.GITHUB_CLIENT_ID || 'mock_github_client_id';
+  const callbackUrl = process.env.GITHUB_CALLBACK_URL || 'http://localhost:5000/api/auth/github/callback';
+  const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(callbackUrl)}&scope=user:email,public_repo`;
+  res.redirect(authUrl);
+});
+
+/**
  * @route   GET /api/auth/github/callback
  * @desc    GitHub OAuth Callback
  */

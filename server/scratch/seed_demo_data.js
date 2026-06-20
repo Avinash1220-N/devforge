@@ -92,7 +92,7 @@ async function seedData() {
   console.log('\nCreating 50 AI requests logs...');
   const aiLogs = [];
   const features = ['portfolio-generate', 'resume-parse', 'project-summary', 'ats-score', 'rewrite', 'career-fit'];
-  const models = ['gemini-1.5-flash', 'gemini-1.5-pro'];
+  const models = ['gemini-2.5-flash', 'gemini-2.5-pro'];
 
   for (let i = 0; i < 50; i++) {
     const user = users[i % users.length];
