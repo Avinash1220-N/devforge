@@ -45,6 +45,7 @@ mongoose.connect(mongoURI)
   .catch((err) => console.error('MongoDB database connection failure:', err.message));
 
 // Import routes
+const path = require('path');
 const authRoutes = require('./routes/auth');
 const githubRoutes = require('./routes/github');
 const deployRoutes = require('./routes/deploy');
@@ -52,7 +53,13 @@ const portfolioRoutes = require('./routes/portfolios');
 const analyticsRoutes = require('./routes/analytics');
 const aiRoutes = require('./routes/ai');
 const adminRoutes = require('./routes/admin');
+const resumeRoutes = require('./routes/resume');
+const recruiterRoutes = require('./routes/recruiter');
+const githubSyncRoutes = require('./routes/githubSync');
 const { authLimiter, aiLimiter, adminLimiter } = require('./middleware/rateLimiter');
+
+// Serve uploads static assets
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Mount routes
 app.use('/api/auth', authLimiter, authRoutes);
@@ -62,6 +69,9 @@ app.use('/api/portfolios', portfolioRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ai', aiLimiter, aiRoutes);
 app.use('/api/admin', adminLimiter, adminRoutes);
+app.use('/api/resume', resumeRoutes);
+app.use('/api/recruiter', recruiterRoutes);
+app.use('/api/github-sync', githubSyncRoutes);
 
 // Health Check Route
 app.get('/api/health', (req, res) => {

@@ -9,31 +9,25 @@ const AnalyticsEventSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['view', 'github_click', 'resume_download', 'contact_submit'],
     required: true,
-    index: true
+    enum: ['view', 'click', 'download', 'recruiter_view']
   },
-  country: {
-    type: String,
-    default: 'Unknown'
-  },
-  device: {
-    type: String,
-    enum: ['Desktop', 'Mobile', 'Tablet', 'Unknown'],
-    default: 'Desktop'
-  },
-  browser: {
-    type: String,
-    default: 'Unknown'
+  elementName: {
+    type: String
   },
   referrer: {
-    type: String,
-    default: 'Direct'
+    type: String
   },
-  timestamp: {
+  country: {
+    type: String
+  },
+  deviceType: {
+    type: String
+  },
+  createdAt: {
     type: Date,
     default: Date.now,
-    index: true
+    expires: 30 * 24 * 60 * 60 // 30 days TTL
   }
 });
 

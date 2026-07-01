@@ -33,10 +33,17 @@ const UserSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  aiBudget: {
+    limit: { type: Number, default: 50 },
+    spent: { type: Number, default: 0 },
+    month: { type: String, default: "" },
+    lastResetAt: { type: Date }
   }
 });
 
 UserSchema.index({ role: 1, isActive: 1 });
+UserSchema.index({ "aiBudget.month": 1 });
 
 module.exports = mongoose.model('User', UserSchema);
 

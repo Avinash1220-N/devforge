@@ -32,6 +32,12 @@ const generateTokenAndSetCookie = (res, userId) => {
 router.get('/github', (req, res) => {
   const clientId = process.env.GITHUB_CLIENT_ID || 'mock_github_client_id';
   const callbackUrl = process.env.GITHUB_CALLBACK_URL || 'http://localhost:5000/api/auth/github/callback';
+  
+  if (clientId === 'mock_github_client_id') {
+    // Redirect directly to our callback with a mock code to simulate GitHub OAuth workflow
+    return res.redirect(`${callbackUrl}?code=mock_github_code`);
+  }
+  
   const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(callbackUrl)}&scope=user:email,public_repo`;
   res.redirect(authUrl);
 });
@@ -45,6 +51,60 @@ router.get('/github/callback', async (req, res) => {
 
   if (!code) {
     return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/auth-success?error=no_code`);
+  }
+
+  const clientId = process.env.GITHUB_CLIENT_ID || 'mock_github_client_id';
+
+  // Handle mock authentication flow
+  if (clientId === 'mock_github_client_id' || code === 'mock_github_code') {
+    try {
+      const mockUser = {
+        id: 'mock_github_user_123',
+        login: 'mock-developer',
+        name: 'Mock Developer',
+        avatar_url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=mock-developer',
+        email: 'mock-developer@example.com'
+      };
+
+      const encryptedToken = encrypt('mock_access_token_value');
+
+      // Find or create user
+      let user = await User.findOne({ githubId: mockUser.id });
+
+      if (user) {
+        user.name = mockUser.name || mockUser.login;
+        user.email = mockUser.email || user.email;
+        user.avatarUrl = mockUser.avatar_url;
+        user.githubAccessToken = encryptedToken;
+        await user.save();
+      } else {
+        const count = await User.countDocuments();
+        const role = count === 0 ? 'admin' : 'user';
+
+        user = new User({
+          githubId: mockUser.id,
+          name: mockUser.name || mockUser.login,
+          email: mockUser.email,
+          avatarUrl: mockUser.avatar_url,
+          role,
+          githubAccessToken: encryptedToken
+        });
+        await user.save();
+      }
+
+      // Generate JWT and set HttpOnly Cookie
+      generateTokenAndSetCookie(res, user._id);
+
+      // Log Activity
+      const logActivity = require('../utils/activityLogger');
+      await logActivity(user._id, 'login', { method: 'mock_github_oauth' });
+
+      // Redirect back to frontend
+      return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/auth-success?status=success`);
+    } catch (error) {
+      console.error('Mock OAuth Callback failure:', error.message);
+      return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/auth-success?error=server_error`);
+    }
   }
 
   try {
